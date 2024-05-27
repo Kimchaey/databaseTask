@@ -1,0 +1,21 @@
+{% extends "index.html" %}
+
+{% block content %}
+<h1>Welcome, {{ user.username }}</h1>
+<h2>Available Language Exchange Partners</h2>
+<div class="profiles">
+    {% for u in users %}
+    <div class="profile">
+        <img src="{{ url_for('static', filename='images/' ~ u.profile_picture) }}" alt="{{ u.username }}">
+        <h3>{{ u.username }}</h3>
+        <p>Native Language: {{ u.native_language }}</p>
+        <p>Fluent Languages: {{ u.fluent_language }}</p>
+        <p>Learning: {{ u.learning_language }} ({{ u.proficiency_level }})</p>
+        <p>Interests: {{ u.interests }}</p>
+        <form action="{{ url_for('message_request', user_id=u.user_id) }}" method="post">
+            <button type="submit">Message Request</button>
+        </form>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

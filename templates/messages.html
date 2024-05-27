@@ -1,0 +1,40 @@
+{% extends "index.html" %}
+
+{% block content %}
+<h1>Messages</h1>
+
+<div class="messages-container">
+    <div class="messages-list">
+        <h2>Your Messages</h2>
+        <ul>
+            {% for match_user in match_users %}
+            <li class="message-item">
+                <a href="{{ url_for('chat', user_id=match_user.user_id) }}" class="message-link">
+                    <img src="{{ url_for('static', filename='images/' ~ match_user.profile_picture) }}" alt="{{ match_user.username }}" class="profile-picture">
+                    <div class="user-info">
+                        <span class="username">{{ match_user.username }}</span>
+                    </div>
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    
+    <div class="requests-list">
+        <h2>Pending Requests</h2>
+        <ul>
+            {% for request, request_user in pending_request_users %}
+            <li class="request-item">
+                <span>{{ request_user.username }}</span>
+                <form action="{{ url_for('handle_request', match_id=request.match_id, action='accept') }}" method="post" style="display:inline;">
+                    <button type="submit" class="accept-button">Accept</button>
+                </form>
+                <form action="{{ url_for('handle_request', match_id=request.match_id, action='reject') }}" method="post" style="display:inline;">
+                    <button type="submit" class="reject-button">Reject</button>
+                </form>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

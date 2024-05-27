@@ -1,0 +1,66 @@
+{% extends "index.html" %}
+
+{% block content %}
+<div class="register-container">
+    <div class="register-box">
+        <h1>Register</h1>
+        <p class="welcome-message">start your language exchange journey.</p>
+        <form method="post" action="{{ url_for('register') }}" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" name="password" required>
+            </div>
+            <div class="form-group">
+                <label for="profile_picture">Profile Picture:</label>
+                <input type="file" name="profile_picture">
+            </div>
+            <div class="form-group">
+                <label for="native_language">Native Language:</label>
+                <input type="text" name="native_language" required>
+            </div>
+            <div class="form-group">
+                <label for="fluent_language">Fluent Languages (comma separated):</label>
+                <input type="text" name="fluent_language">
+            </div>
+            <div class="form-group">
+                <label for="learning_language">Learning Language:</label>
+                <input type="text" name="learning_language" required>
+            </div>
+            <div class="form-group">
+                <label for="proficiency_level">Proficiency Level:</label>
+                <select name="proficiency_level" required>
+                    <option value="Beginner">Beginner</option>
+                    <option value="Intermediate">Intermediate</option>
+                    <option value="Advanced">Advanced</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="bio">Bio:</label>
+                <textarea name="bio" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="interests">Interests (comma separated):</label>
+                <input type="text" name="interests" required>
+            </div>
+            <div class="form-group">
+                <label for="preferred_partner">Preferred Partner:</label>
+                <input type="text" name="preferred_partner" required>
+            </div>
+            <div class="form-group">
+                <label for="learning_goals">Learning Goals:</label>
+                <textarea name="learning_goals" required></textarea>
+            </div>
+            <button type="submit">Register</button>
+        </form>
+        <p>Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
+    </div>
+</div>
+{% endblock %}

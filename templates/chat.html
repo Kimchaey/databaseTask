@@ -1,0 +1,105 @@
+{% extends "index.html" %}
+
+{% block content %}
+<h1>Chat with {{ chat_user.username }}</h1>
+
+<div class="chat-container">
+    <div class="chat-messages">
+        {% for message in messages %}
+        <div class="chat-message {% if message.sender_id == user.user_id %}sent{% else %}received{% endif %}">
+            <div class="message-content">
+                <p>{{ message.message_content }}</p>
+                {% if message.translated_content %}
+                <div class="translated-message">
+                    <p>{{ message.translated_content }}</p>
+                </div>
+                {% endif %}
+            </div>
+            <div class="message-info">
+                <span class="timestamp">{{ message.timestamp }}</span>
+                {% if message.sender_id != user.user_id %}
+                <button class="translate-button" data-message-id="{{ message.message_id }}">Translate</button>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <form action="{{ url_for('chat', user_id=chat_user.user_id) }}" method="post" class="chat-form">
+        <textarea name="message_content" rows="3" placeholder="Type your message..."></textarea>
+        <button type="submit">Send</button>
+    </form>
+    <form action="{{ url_for('delete_chat', user_id=chat_user.user_id) }}" method="post" class="delete-chat-form">
+        <button type="submit" class="delete-button">Delete Chat</button>
+    </form>
+</div>
+
+<div id="translate-modal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Translate Message</h2>
+        <form id="translate-form">
+            <input type="hidden" name="message_id" id="translate-message-id">
+            <label for="target_language">Choose a language:</label>
+            <select name="target_language" id="target_language">
+                {% for code, lang in languages.items() %}
+                <option value="{{ code }}">{{ lang }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit">Translate</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const translateButtons = document.querySelectorAll('.translate-button');
+        const modal = document.getElementById('translate-modal');
+        const closeModal = document.querySelector('.close');
+        const translateForm = document.getElementById('translate-form');
+        const translateMessageId = document.getElementById('translate-message-id');
+
+        translateButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                translateMessageId.value = this.getAttribute('data-message-id');
+                modal.style.display = 'block';
+            });
+        });
+
+        closeModal.onclick = function () {
+            modal.style.display = 'none';
+        };
+
+        window.onclick = function (event) {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        };
+
+        translateForm.onsubmit = function (event) {
+            event.preventDefault();
+            const formData = new FormData(translateForm);
+
+            fetch('{{ url_for('translate_message') }}', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                const messageElement = document.querySelector(`[data-message-id="${data.message_id}"]`).closest('.chat-message');
+                let translatedMessage = messageElement.querySelector('.translated-message');
+                if (translatedMessage) {
+                    translatedMessage.innerHTML = `<p>${data.translated_text}</p>`;
+                } else {
+                    translatedMessage = document.createElement('div');
+                    translatedMessage.classList.add('translated-message');
+                    translatedMessage.innerHTML = `<p>${data.translated_text}</p>`;
+                    messageElement.appendChild(translatedMessage);
+                }
+                modal.style.display = 'none';
+            })
+            .catch(error => console.error('Error:', error));
+        };
+    });
+</script>
+
+{% endblock %}
